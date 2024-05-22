@@ -10,6 +10,7 @@ const DataModel = new Schema(
     name: requiredUniqueString,
     description: requiredString,
     image: requiredString,
+    price: requiredString,
     disabled: { type: Boolean, required: true }
   },
   { collection: collectionName } 

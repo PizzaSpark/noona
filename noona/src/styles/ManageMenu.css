@@ -1,0 +1,4 @@
+.modal-image {
+    width: 100px; /* or any size you want */
+    max-height: 500px; /* keep aspect ratio */
+}
