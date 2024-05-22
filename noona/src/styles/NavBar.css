@@ -1,24 +1,45 @@
 .navbar {
     display: flex;
     height: 100px;
-    background-color: salmon;
-    font-family: 'Poppins', sans-serif;
-    font-size: 18px;
     position: sticky;
     top: 0;
-    padding-left: 5%;
+    background-color: #f2e6da;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    justify-content: space-between;
+    padding-left: 100px;
+    padding-right: 100px;
 }
 
-.navbar-items {
+.navbar-logo {
     display: flex;
-    width: 100%;
-    justify-content: flex-start;
+    color: #C76C39;
+}
+
+.navbar-links {
+    display: flex;
     font-weight: bold;
+    gap: 20px;
     align-items: center;
 }
 
-.navbar-items-tile {
+.navbar-links a{
+    color: #60321E;
+}
+
+.navbar-links a.active{
+    background-color: #DFCD8F;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 20px;
+}
+
+.navbar-signin {
     display: flex;
+    font-weight: bold;
+    gap: 20px;
     align-items: center;
-    gap: 5px;
+}
+
+.navbar-signin a{
+    color: #60321E;
 }
