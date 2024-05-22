@@ -11,8 +11,7 @@ export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* <Route path="/" element={<Landing />} /> */}
-                <Route path="/" element={<ManageMenu />} />
+                <Route path="/" element={<Landing />} />
                 <Route path="/managemenu" element={<ManageMenu />} />
                 <Route path="/manageadmins" element={<ManageAdmins />} />
 

@@ -13,11 +13,6 @@ export default function Sidebar() {
             <div className="sidebar">
                 <h1>Noona</h1>
                 <div className="sidebar-items">
-                    <SidebarLink
-                        to="/dashboard"
-                        Icon={BarChart}
-                        label="Dashboard"
-                    />
 
                     <SidebarLink
                         to="/managemenu"

@@ -47,7 +47,6 @@ export default function ManageMenu() {
     const [stored_user_id, setStored_user_id] = useState(
         localStorage.getItem("user_id")
     );
-
     // useCheckIfStaff();
 
     useEffect(() => {
@@ -136,24 +135,32 @@ export default function ManageMenu() {
     };
 
     const handleDeleteData = async (data) => {
-      try {
-          const response = await axios.delete(
-              `http://localhost:1337/deletemenu`,
-              { data: data }
-          );
-          
-          const result = response.data;
-          if (result.success) {
-              alert(result.message);
-              setRefreshDataList(!refreshDataList);
-          } else {
-              alert("Failed to delete menu. Please try again!.");
-          }
-      } catch (error) {
-          console.error("Error deleting menu:", error);
-          alert("An error occured. Please try again.");
-      }
-  };
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this menu item?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await axios.delete(
+                `http://localhost:1337/deletemenu`,
+                { data: data }
+            );
+
+            const result = response.data;
+            if (result.success) {
+                alert(result.message);
+                setRefreshDataList(!refreshDataList);
+            } else {
+                alert("Failed to delete menu. Please try again!.");
+            }
+        } catch (error) {
+            console.error("Error deleting menu:", error);
+            alert("An error occured. Please try again.");
+        }
+    };
 
     const openModal = (dataTile, isEdit = false) => {
         setCurrentData(dataTile);
@@ -236,7 +243,7 @@ export default function ManageMenu() {
                         variant="contained"
                         onClick={() => openModal(initialData, false)}
                     >
-                        ADD STOCK
+                        ADD MENU ITEM
                     </Button>
                 </div>
 
@@ -384,11 +391,14 @@ export default function ManageMenu() {
 
                                 {isEditMode ? (
                                     <div>
-                                        <img
-                                            src={currentData.image}
-                                            alt="Current"
-                                            className="modal-image"
-                                        />
+                                        {typeof currentData.image ===
+                                            "string" && (
+                                            <img
+                                                src={currentData.image}
+                                                alt="Current"
+                                                className="modal-image"
+                                            />
+                                        )}
                                         <TextField
                                             variant="outlined"
                                             id="image"
@@ -418,9 +428,11 @@ export default function ManageMenu() {
                                     variant="outlined"
                                     id="price"
                                     required
+                                    type="number"
                                     label="Price"
                                     value={currentData.price}
                                     onChange={handleChange}
+                                    inputProps={{ className: "hide-arrows" }}
                                 />
 
                                 <FormControlLabel

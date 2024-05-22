@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const MenuModel = require("./models/menu.model");
+const AdminModel = require("./models/admin.model");
 const path = require("path");
 const multer = require("multer");
 const { URL } = require("url");
@@ -144,6 +145,68 @@ app.delete("/deletemenu", async (req, res) => {
                 console.warn("No valid image path found for deletion");
             }
             await MenuModel.deleteOne({ _id: dataObject._id });
+            res.json({ success: true, message: "Data deleted successfully!" });
+        }
+    } catch (error) {
+        console.error("Error deleting data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+//add
+app.post("/addadmin", async (req, res) => {
+    const incomingData = req.body;
+
+    try {
+        const dataObject = new AdminModel(incomingData);
+        await dataObject.save();
+        res.json({ success: true, message: "Data added successfully!" });
+    } catch (error) {
+        console.error("Error adding data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+//view
+app.get("/viewadmins", async (req, res) => {
+    try {
+        const gotDataList = await AdminModel.find();
+        res.json(gotDataList);
+    } catch (error) {
+        console.error("Error getting data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+//edit
+app.post("/updateadmin", async (req, res) => {
+    const incomingData = req.body;
+
+    try {
+        const dataObject = await AdminModel.findOne({ email: incomingData.email });
+        if (!dataObject) {
+            res.json({ success: false, message: "Data not found" });
+        } else {
+            Object.assign(dataObject, incomingData);
+            await dataObject.save();
+            res.json({ success: true, message: "Data updated successfully!" });
+        }
+    } catch (error) {
+        console.error("Error updating data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+//delete
+app.delete("/deleteadmin", async (req, res) => {
+    const incomingData = req.body;
+    console.log(incomingData);
+    try {
+        const dataObject = await AdminModel.findOne({ email: incomingData.email });
+        if (!dataObject) {
+            res.json({ success: false, message: "Data not found" });
+        } else {
+            await AdminModel.deleteOne({ _id: dataObject._id });
             res.json({ success: true, message: "Data deleted successfully!" });
         }
     } catch (error) {

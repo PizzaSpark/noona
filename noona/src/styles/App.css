@@ -52,3 +52,41 @@ form {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
+.error-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.error-page img {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.error-page a {
+    color: #030407;
+    font-weight: bold;
+}
+
+.column-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.side-wo-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.search-filter {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+}
