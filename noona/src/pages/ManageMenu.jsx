@@ -199,6 +199,7 @@ export default function ManageMenu() {
         setFilterSearch(event.target.value);
     };
 
+    //MARK: FRONT
     return (
         <div className="page">
             <Sidebar />
@@ -242,6 +243,7 @@ export default function ManageMenu() {
                         className="tablebutton"
                         variant="contained"
                         onClick={() => openModal(initialData, false)}
+                        style={{ backgroundColor: '#c76c39' }}
                     >
                         ADD MENU ITEM
                     </Button>

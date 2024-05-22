@@ -96,11 +96,11 @@ export default function Login() {
                             }}
                         />
 
-                        <Button variant="contained" type="submit">
+                        <Button variant="contained" type="submit" style={{ backgroundColor: '#eddec3' }}>
                             SIGN IN
                         </Button>
 
-                        <Button variant="contained" onClick={handleGoBack}>
+                        <Button variant="contained" onClick={handleGoBack} style={{ backgroundColor: '#c76c39' }}>
                             GO BACK
                         </Button>
                     </form>

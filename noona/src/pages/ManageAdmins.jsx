@@ -188,6 +188,7 @@ export default function ManageAdmins() {
                         className="tablebutton"
                         variant="contained"
                         onClick={() => openModal(initialData, false)}
+                        style={{ backgroundColor: '#c76c39' }}
                     >
                         ADD ADMIN
                     </Button>
