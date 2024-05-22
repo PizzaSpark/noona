@@ -44,7 +44,7 @@ export default function ManageAdmins() {
     const [showPassword, setShowPassword] = useState(false);
 
     const [stored_user_id, setStored_user_id] = useState(
-        localStorage.getItem("user_id")
+        localStorage.getItem("isAdmin")
     );
 
     useEffect(() => {

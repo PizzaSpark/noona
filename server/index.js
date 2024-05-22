@@ -214,3 +214,22 @@ app.delete("/deleteadmin", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+//login
+app.post("/login", async (req, res) => {
+    const incomingData = req.body;
+    try {
+        const dataObject = await AdminModel.findOne({
+            email: incomingData.email,
+            password: incomingData.password,
+        });
+        if (!dataObject) {
+            res.json({ success: false, message: "Invalid email or password" });
+        } else {
+            res.json({ success: true, message: "Login successful" });
+        }
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});

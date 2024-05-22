@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound";
 import Forbidden from "./pages/Forbidden";
 import ManageMenu from "./pages/ManageMenu";
 import ManageAdmins from "./pages/ManageAdmins";
+import Login from "./pages/Login";
 
 export default function App() {
     return (
@@ -14,6 +15,8 @@ export default function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/managemenu" element={<ManageMenu />} />
                 <Route path="/manageadmins" element={<ManageAdmins />} />
+
+                <Route path="/login" element={<Login />} />
 
                 <Route path="*" element={<NotFound />} />
                 <Route path="/forbidden" element={<Forbidden />} />
