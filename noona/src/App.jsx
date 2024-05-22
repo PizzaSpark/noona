@@ -12,7 +12,6 @@ import About from "./pages/About";
 import Location from "./pages/Location";
 import Socials from "./pages/Socials";
 
-
 export default function App() {
     return (
         <BrowserRouter>
