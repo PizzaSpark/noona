@@ -1,5 +1,5 @@
 import React from "react";
-import notFoundImage from "../assets/404 NotFound.png";
+import notFoundImage from "../assets/403 Forbidden.png";
 
 export default function Forbidden() {
     return (

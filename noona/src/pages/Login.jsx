@@ -31,6 +31,14 @@ export default function Login() {
         });
     };
 
+    useEffect(() => {
+        const isAdmin = localStorage.getItem("isAdmin");
+
+        if (isAdmin) {
+            navigate("/managemenu");
+        }
+    }, []);
+
     const handleLogin = async (e) => {
         e.preventDefault();
 

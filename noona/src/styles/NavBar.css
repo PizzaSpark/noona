@@ -24,12 +24,15 @@
 
 .navbar-links a{
     color: #60321E;
+    padding-left: 10px;
+    padding-right: 10px;
+
 }
 
 .navbar-links a.active{
     background-color: #DFCD8F;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 12px;
+    padding-right: 12px;
     border-radius: 20px;
 }
 

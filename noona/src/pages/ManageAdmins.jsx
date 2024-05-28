@@ -27,6 +27,7 @@ import { Delete, Description, Edit, Visibility,
     VisibilityOff, } from "@mui/icons-material";
 
 export default function ManageAdmins() {
+    useCheckIfStaff();
     const initialData = {
         email: "",
         password: "",
@@ -54,7 +55,6 @@ export default function ManageAdmins() {
     const fetchData = async () => {
         await getAdminList();
     };
-
     async function getAdminList() {
         axios
             .get(`http://localhost:1337/viewadmins`)

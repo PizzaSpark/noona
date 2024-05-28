@@ -27,6 +27,7 @@ import {
 import { Delete, Description, Edit } from "@mui/icons-material";
 
 export default function ManageMenu() {
+    useCheckIfStaff();
     const initialData = {
         name: "",
         description: "",
@@ -243,7 +244,7 @@ export default function ManageMenu() {
                         className="tablebutton"
                         variant="contained"
                         onClick={() => openModal(initialData, false)}
-                        style={{ backgroundColor: '#c76c39' }}
+                        style={{ backgroundColor: "#c76c39" }}
                     >
                         ADD MENU ITEM
                     </Button>
@@ -396,7 +397,7 @@ export default function ManageMenu() {
                                         {typeof currentData.image ===
                                             "string" && (
                                             <img
-                                                src={currentData.image}
+                                                src={`http://localhost:1337/uploads/${currentData.image}`}
                                                 alt="Current"
                                                 className="modal-image"
                                             />

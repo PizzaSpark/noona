@@ -5,7 +5,7 @@ import { BarChart, Logout, MenuBook, People } from "@mui/icons-material";
 
 export default function Sidebar() {
     const handleLogout = () => {
-        localStorage.removeItem("user_role");
+        localStorage.removeItem("isAdmin");
     };
 
     return (

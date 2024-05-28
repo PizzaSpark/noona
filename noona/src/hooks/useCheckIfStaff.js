@@ -5,9 +5,9 @@ export default function userCheckIfStaff() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userRole = localStorage.getItem('user_role');
+        const isAdmin = localStorage.getItem('isAdmin');
 
-        if (userRole !== 'Admin') {
+        if (!isAdmin) {
             navigate('/forbidden');
         }
     }, [history]);

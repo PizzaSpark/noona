@@ -19,7 +19,7 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
 
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/uploads", express.static(uploadsDir));
 
 const port = 1337;
 const dbName = "noona-database";
@@ -39,23 +39,33 @@ mongoose
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./uploads/");
+        cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        cb(
-            null,
-            new Date().toISOString().replace(/:/g, "-") + file.originalname
-        );
+        filename = Date.now() + "-" + file.originalname;
+        cb(null, filename);
     },
 });
 
 const upload = multer({ storage: storage });
 
+// Error handling middleware
+const handleError = (err, res) => {
+    console.error("Error:", err);
+    res.json({ error: "Internal Server Error" });
+};
+
+// Function to delete image
+const deleteImage = (imagePath) => {
+    fs.unlink(imagePath, (err) => {
+        if (err) console.error("Error deleting old image:", err);
+    });
+};
+
 //add
 app.post("/addmenu", upload.single("image"), async (req, res) => {
     const incomingData = req.body;
-    incomingData.image =
-        req.protocol + "://" + req.get("host") + "/" + req.file.path;
+    incomingData.image = req.file.filename;
 
     try {
         const dataObject = new MenuModel(incomingData);
@@ -63,7 +73,7 @@ app.post("/addmenu", upload.single("image"), async (req, res) => {
         res.json({ success: true, message: "Data added successfully!" });
     } catch (error) {
         console.error("Error adding data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -74,82 +84,76 @@ app.get("/viewmenu", async (req, res) => {
         res.json(gotDataList);
     } catch (error) {
         console.error("Error getting data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
-//update
+// Update route
 app.post("/updatemenu", upload.single("image"), async (req, res) => {
     const incomingData = req.body;
     if (req.file) {
-        incomingData.image = req.protocol + "://" + req.get("host") + "/" + req.file.path;
+        incomingData.image = req.file.filename;
     }
 
     try {
         const dataObject = await MenuModel.findOne({ name: incomingData.name });
         if (!dataObject) {
-            res.json({ success: false, message: "Data not found" });
-        } else {
-            // Delete the old image
-            if (dataObject.image && typeof dataObject.image === "string") {
-                try {
-                    const imageUrl = new URL(dataObject.image);
-                    const imagePath = path.join(__dirname,  decodeURI(imageUrl.pathname));
-                    fs.unlink(imagePath, (err) => {
-                        if (err) console.error("Error deleting old image:", err);
-                    });
-                } catch (urlError) {
-                    console.error("Error parsing old image URL:", urlError);
-                }
-            }
-
-            // Update the document and save it
-            Object.assign(dataObject, incomingData);
-            await dataObject.save();
-            res.json({ success: true, message: "Data updated successfully!" });
+            return res.json({ message: "Data not found" });
         }
+
+        // Delete the old image only if a new one has been uploaded
+        if (
+            req.file &&
+            dataObject.image &&
+            typeof dataObject.image === "string"
+        ) {
+            try {
+                const imagePath = path.join(uploadsDir, dataObject.image);
+                deleteImage(imagePath);
+            } catch (urlError) {
+                console.error("Error parsing old image URL:", urlError);
+            }
+        }
+
+        // Update the document and save it
+        Object.assign(dataObject, incomingData);
+        await dataObject.save();
+        res.json({ success: true, message: "Data updated successfully!" });
     } catch (error) {
-        console.error("Error updating data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
 //delete
 app.delete("/deletemenu", async (req, res) => {
     const incomingData = req.body;
+    let dataObject;
     try {
-        const dataObject = await MenuModel.findOne({ name: incomingData.name });
-        console.log(dataObject);
+        dataObject = await MenuModel.findOne({ name: incomingData.name });
         if (!dataObject) {
-            res.json({ success: false, message: "Data not found" });
-        } else {
-            // Ensure the image property exists and is a valid URL
-            if (dataObject.image && typeof dataObject.image === "string") {
-                try {
-                    const imageUrl = new URL(dataObject.image);
-                    const imagePath = path.join(__dirname,  decodeURI(imageUrl.pathname));
-                    console.log("Deleting image at path:", imagePath);
-
-                    // Delete the image file
-                    fs.unlink(imagePath, (err) => {
-                        if (err) {
-                            console.error("Error deleting image:", err);
-                        } else {
-                            console.log("Image deleted successfully");
-                        }
-                    });
-                } catch (urlError) {
-                    console.error("Error parsing image URL:", urlError);
-                }
-            } else {
-                console.warn("No valid image path found for deletion");
-            }
-            await MenuModel.deleteOne({ _id: dataObject._id });
-            res.json({ success: true, message: "Data deleted successfully!" });
+            return res.json({ message: "Data not found" });
         }
+
+        // Delete the image if it exists
+        if (dataObject.image && typeof dataObject.image === "string") {
+            const imagePath = path.join(uploadsDir, dataObject.image);
+            console.log("Deleting image at path:", imagePath);
+            deleteImage(imagePath);
+        } else {
+            console.error("No valid image path found for deletion");
+        }
+
+        try {
+            await MenuModel.deleteOne({ _id: dataObject._id });
+        } catch (error) {
+            console.error("Error deleting data:", error);
+            return res.json({ message: "Error deleting data" });
+        }
+
+        res.json({ success: true, message: "Data deleted successfully!" });
     } catch (error) {
         console.error("Error deleting data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -163,7 +167,7 @@ app.post("/addadmin", async (req, res) => {
         res.json({ success: true, message: "Data added successfully!" });
     } catch (error) {
         console.error("Error adding data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -174,7 +178,7 @@ app.get("/viewadmins", async (req, res) => {
         res.json(gotDataList);
     } catch (error) {
         console.error("Error getting data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -183,9 +187,11 @@ app.post("/updateadmin", async (req, res) => {
     const incomingData = req.body;
 
     try {
-        const dataObject = await AdminModel.findOne({ email: incomingData.email });
+        const dataObject = await AdminModel.findOne({
+            email: incomingData.email,
+        });
         if (!dataObject) {
-            res.json({ success: false, message: "Data not found" });
+            res.json({ message: "Data not found" });
         } else {
             Object.assign(dataObject, incomingData);
             await dataObject.save();
@@ -193,7 +199,7 @@ app.post("/updateadmin", async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -202,16 +208,18 @@ app.delete("/deleteadmin", async (req, res) => {
     const incomingData = req.body;
     console.log(incomingData);
     try {
-        const dataObject = await AdminModel.findOne({ email: incomingData.email });
+        const dataObject = await AdminModel.findOne({
+            email: incomingData.email,
+        });
         if (!dataObject) {
-            res.json({ success: false, message: "Data not found" });
+            res.json({ message: "Data not found" });
         } else {
             await AdminModel.deleteOne({ _id: dataObject._id });
             res.json({ success: true, message: "Data deleted successfully!" });
         }
     } catch (error) {
         console.error("Error deleting data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
 
@@ -224,12 +232,12 @@ app.post("/login", async (req, res) => {
             password: incomingData.password,
         });
         if (!dataObject) {
-            res.json({ success: false, message: "Invalid email or password" });
+            res.json({ message: "Invalid email or password" });
         } else {
             res.json({ success: true, message: "Login successful" });
         }
     } catch (error) {
         console.error("Error logging in:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        handleError(error, res);
     }
 });
