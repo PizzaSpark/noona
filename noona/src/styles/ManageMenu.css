@@ -3,9 +3,3 @@
     justify-content: center;
     align-items: center;
 }
-
-.modal-image {
-    width: 300px;
-    height: 194px;
-    object-fit: cover;
-}
