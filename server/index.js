@@ -3,18 +3,21 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fs = require("fs");
+const path = require("path");
+
 const mongoose = require("mongoose");
 const MenuModel = require("./models/menu.model");
 const AdminModel = require("./models/admin.model");
-const path = require("path");
+
 const multer = require("multer");
-const { URL } = require("url");
 
 app.use(cors());
 app.use(bodyParser.json());
 
+// Stating the path of the uploads directory
 const uploadsDir = path.join(__dirname, "/uploads");
 
+// Create the uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
