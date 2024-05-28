@@ -1,4 +1,11 @@
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .modal-image {
-    width: 100px; /* or any size you want */
-    max-height: 500px; /* keep aspect ratio */
+    width: 300px;
+    height: 194px;
+    object-fit: cover;
 }

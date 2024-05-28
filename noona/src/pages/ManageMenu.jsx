@@ -45,6 +45,8 @@ export default function ManageMenu() {
     const [modalState, setModalState] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
 
+    const [imageUrl, setImageUrl] = useState("");
+
     const [stored_user_id, setStored_user_id] = useState(
         localStorage.getItem("user_id")
     );
@@ -93,6 +95,7 @@ export default function ManageMenu() {
             if (result.success) {
                 setRefreshDataList(!refreshDataList);
                 setModalState(false);
+                setImageUrl("");
             }
             alert(result.message);
         } catch (error) {
@@ -126,6 +129,7 @@ export default function ManageMenu() {
                 alert(result.message);
                 setRefreshDataList(!refreshDataList);
                 setModalState(false);
+                setImageUrl("");
             } else {
                 alert("Failed to update menu. Please try again!.");
             }
@@ -171,6 +175,7 @@ export default function ManageMenu() {
 
     const closeModal = () => {
         setModalState(false);
+        setImageUrl("");
     };
 
     const handleChange = (e) => {
@@ -193,6 +198,7 @@ export default function ManageMenu() {
                 ...currentData,
                 image: e.target.files[0],
             });
+            setImageUrl(URL.createObjectURL(e.target.files[0]));
         }
     };
 
@@ -373,6 +379,48 @@ export default function ManageMenu() {
                                         : handleAddData
                                 }
                             >
+                                {imageUrl ? (
+                                    <div className="image-container">
+                                        <img
+                                            src={imageUrl}
+                                            alt="Current"
+                                            style={{
+                                                width: "300px",
+                                                height: "194px",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    </div>
+                                ) : typeof currentData.image === "string" &&
+                                  currentData.image !== "" ? (
+                                    <div className="image-container">
+                                        <img
+                                            src={`http://localhost:1337/uploads/${currentData.image}`}
+                                            alt="Current"
+                                            style={{
+                                                width: "300px",
+                                                height: "194px",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="image-container">
+                                        <div
+                                            style={{
+                                                width: "300px",
+                                                height: "194px",
+                                                border: "1px solid #ccc",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            No image yet
+                                        </div>
+                                    </div>
+                                )}
+
                                 <TextField
                                     variant="outlined"
                                     id="name"
@@ -392,40 +440,17 @@ export default function ManageMenu() {
                                     onChange={handleChange}
                                 />
 
-                                {isEditMode ? (
-                                    <div>
-                                        {typeof currentData.image ===
-                                            "string" && (
-                                            <img
-                                                src={`http://localhost:1337/uploads/${currentData.image}`}
-                                                alt="Current"
-                                                className="modal-image"
-                                            />
-                                        )}
-                                        <TextField
-                                            variant="outlined"
-                                            id="image"
-                                            label="Change Image"
-                                            type="file"
-                                            onChange={handleImageChange}
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                        />
-                                    </div>
-                                ) : (
-                                    <TextField
-                                        variant="outlined"
-                                        id="image"
-                                        required
-                                        type="file"
-                                        label="Image"
-                                        onChange={handleImageChange}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                    />
-                                )}
+                                <TextField
+                                    variant="outlined"
+                                    id="image"
+                                    required
+                                    type="file"
+                                    label={isEditMode ? "Update Image" : "Add Image"}
+                                    onChange={handleImageChange}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
 
                                 <TextField
                                     variant="outlined"
